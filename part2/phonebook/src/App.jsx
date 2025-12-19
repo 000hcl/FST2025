@@ -20,11 +20,14 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const nonUnique = persons.filter(person =>
+    const existing = persons.find(person =>
       person.name===newName
     )
-    if (nonUnique.length != 0) {
-      alert(`${newName} is already added to phonebook`)
+    if (existing !== undefined) {
+      const confirmChange = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (confirmChange) {
+        replacePerson(existing)
+      }
     } else {
       const newPerson = { name: newName, number:newNumber }
       phonebookService
@@ -36,6 +39,16 @@ const App = () => {
       })
     }
 
+  }
+
+  const replacePerson = (person) => {
+    const newPerson = { id: person.id,name: newName, number:newNumber }
+    phonebookService.updatePerson(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.filter(p => p.id!==person.id).concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleDelete = (id) => {
