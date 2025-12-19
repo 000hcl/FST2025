@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notification, setNotification] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -29,6 +30,7 @@ const App = () => {
       const confirmChange = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
       if (confirmChange) {
         replacePerson(existing)
+        
       }
     } else {
       const newPerson = { name: newName, number:newNumber }
@@ -59,6 +61,13 @@ const App = () => {
           setNotification(null)
         }, 5000)
       })
+      .catch(() => {
+          setError(`Information on ${newName} has already been removed from server.`)
+          setTimeout(()=>{
+            setError(null)
+          }, 5000)
+          setPersons(persons.filter(p => p.id !== person.id))
+      })
   }
 
   const handleDelete = (id) => {
@@ -69,14 +78,23 @@ const App = () => {
         .then(() =>{
 
           setPersons(persons.filter(person=>person.id!==id))
-        }).catch(error =>{
-          console.log(`${error}`)
+          setNotification(`Deleted ${person.name} successfully.`)
+          setTimeout(()=>{
+          setNotification(null)
+          }, 5000)
+        }).catch(() => {
+          setError(`Information on ${person.name} has already been removed from server.`)
+          setTimeout(()=>{
+            setError(null)
+          }, 5000)
+          setPersons(persons.filter(p => p.id !== person.id))
         }
         )
     }
 
     
   }
+
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -96,7 +114,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification message={notification} classname={'notification'}/>
+      <Notification message={error} classname={'error'}/>
       <Filter handleChange={handleFilterChange}/>
       <h3>add a new</h3>
       <PersonForm onSubmit={addPerson} nameVal={newName} numberVal={newNumber} nameChange={handleNameChange} numberChange={handleNumberChange}/>
