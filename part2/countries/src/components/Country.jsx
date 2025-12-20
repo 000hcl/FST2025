@@ -17,7 +17,7 @@ const Country = ({country}) => {
     )
 }
 
-const CountryList = ({countries}) => {
+const CountryList = ({countries, handleShow}) => {
     if (countries.length > 10) {
         return (
             <div>
@@ -40,7 +40,7 @@ const CountryList = ({countries}) => {
     return (
             <div>
                 {countries.map(c => (
-                    <li key={c.name.common}>{c.name.common}</li>))}
+                    <li key={c.name.common}>{c.name.common} <button onClick={()=>handleShow(c.name.common)}>show</button></li>))}
 
             </div>
         )

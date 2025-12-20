@@ -22,10 +22,14 @@ function App() {
     setSearch(event.target.value)
   }
 
+  const handleShow = (country) => {
+    setSearch(country)
+  }
+
   return (
     <>
       <SearchBar handleChange={handleSearchChange}/>
-      <CountryList countries={countriesMatched}/>
+      <CountryList countries={countriesMatched} handleShow={handleShow}/>
     </>
   )
 }
