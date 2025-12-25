@@ -94,7 +94,7 @@ app.post('/api/persons', (request, response) => {
 
 
 
-  persons.concat(person)
+  persons = persons.concat(person)
 
   response.json(person)
 
