@@ -29,6 +29,18 @@ app.use(morgan(function (tokens, req, res) {
   ].join(' ')
 }))
 
+app.get('/test', (request, response) => {
+  response.send('hello')
+})
+
+app.get('/info', (request, response) => {
+  Person.find({}).then(p => {
+    const peopleLength = p.length
+    return(
+      response.send(`Phonebook has info for ${peopleLength} people <br/>${new Date().toString()}`)
+    )
+  })
+})
 
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(p => {
