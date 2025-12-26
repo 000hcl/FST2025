@@ -54,7 +54,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  
+
   if (!body.name) {
     return response.status(400).json({
       error: 'name missing'
@@ -76,6 +76,24 @@ app.post('/api/persons', (request, response) => {
 
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const number = request.body.number
+
+  Person.findById(request.params.id)
+    .then(p => {
+      console.log(p);
+      
+      if (!p) {
+        return response.status(404).end()
+      }
+      p.number = number
+
+      return p.save().then(updated => {
+        response.json(updated)
+      })
+    })
+    .catch(error => next(error))
+})
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
