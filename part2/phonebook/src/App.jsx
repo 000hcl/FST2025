@@ -44,6 +44,13 @@ const App = () => {
         setTimeout(()=>{
           setNotification(null)
         }, 5000)
+        
+      })
+      .catch(error => {
+        setError(`${error.response.data.error}`)
+        setTimeout(()=>{
+          setError(null)
+        }, 5000)
       })
     }
 
@@ -61,12 +68,19 @@ const App = () => {
           setNotification(null)
         }, 5000)
       })
-      .catch(() => {
-          setError(`Information on ${newName} has already been removed from server.`)
+      .catch((error) => {
+          const msg = error.response.data.error
+          console.log(msg);
+          if (msg) {
+            setError(msg)
+          } else {
+            setError(`Information on ${newName} has already been removed from server.`)
+            setPersons(persons.filter(p => p.id !== person.id))
+          }
           setTimeout(()=>{
             setError(null)
           }, 5000)
-          setPersons(persons.filter(p => p.id !== person.id))
+          
       })
   }
 
