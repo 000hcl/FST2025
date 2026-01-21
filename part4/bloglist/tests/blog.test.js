@@ -11,30 +11,28 @@ test('dummy returns one', () => {
 
 describe('total likes', () => {
     const listWithOneBlog = [
-      {
-        _id: '5a422aa71b54a676234d17f8',
-        title: 'Go To Statement Considered Harmful',
-        author: 'Edsger W. Dijkstra',
-        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-        likes: 5,
-        __v: 0
-      }
-    ]
-
-    const biggerList = [
         {
-            "title": "On the Veg",
-            "author": "Maverick Beeson",
-            "url": "someurl.url",
-            "likes": 500
-        },
-        {
-            "title": "Pizza Pies",
-            "author": "John DiGiorno",
-            "url": "pizzaurl.url",
-            "likes": 490
+          title: 'Go To Statement Considered Harmful',
+          author: 'Edsger W. Dijkstra',
+          url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+          likes: 5,
         }
-    ]
+      ]
+  
+      const biggerList = [
+          {
+              title: "On the Veg",
+              author: "Maverick Beeson",
+              url: "someurl.url",
+              likes: 500
+          },
+          {
+              title: "Pizza Pies",
+              author: "John DiGiorno",
+              url: "pizzaurl.url",
+              likes: 490
+          }
+      ]
   
     test('when list has only one blog, equals the likes of that', () => {
       const result = listHelper.totalLikes(listWithOneBlog)
@@ -51,3 +49,48 @@ describe('total likes', () => {
         assert.strictEqual(result, 0)
     })
   })
+
+describe('favorite blog', () => {
+    const blog1 =
+    {
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 500,
+    }
+    const blog2 = 
+    {
+        title: "On the Veg",
+        author: "Maverick Beeson",
+        url: "someurl.url",
+        likes: 500
+    }
+    const blog3 =
+    {
+        title: "Pizza Pies",
+        author: "John DiGiorno",
+        url: "pizzaurl.url",
+        likes: 490
+    }
+ 
+  
+    test('when list has only one blog, returns that blog', () => {
+    const result = listHelper.favoriteBlog([blog1])
+    assert.deepStrictEqual(result, blog1)
+    })
+
+    test('of a bigger list is correct', () => {
+        const result = listHelper.favoriteBlog([blog2, blog3])
+        assert.deepStrictEqual(result, blog2)
+    })
+
+    test('when list has equally liked blogs, returns the first one,', () => {
+    const result = listHelper.favoriteBlog([blog1,blog2,blog3])
+    assert.deepStrictEqual(result, blog1)
+    })
+
+    test('of an empty list returns null', () => {
+        const result = listHelper.favoriteBlog([])
+        assert.strictEqual(result, null)
+    })
+})
