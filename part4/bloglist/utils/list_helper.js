@@ -29,11 +29,23 @@ const mostBlogs = (blogs) => {
     return lodash.maxBy(mapped, 'blogs')
 }
 
+const mostLikes = (blogs) => {
+    const mapper = (val, key) => {
+        const author = key
+        const likes = lodash.sumBy(val, 'likes')
+        return {'author': author, 'likes': likes}
+    }
+    const grouped = lodash.groupBy(blogs, 'author')
+    const mapped = lodash.map(grouped, mapper)
+    return lodash.maxBy(mapped, 'likes')
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
 
 // notes: lodash partition, zipWith
