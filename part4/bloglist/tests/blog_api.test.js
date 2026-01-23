@@ -78,6 +78,17 @@ test('adding a new valid blog', async () => {
     
 })
 
+test('adding a new blog with no likes defaults to 0', async () => {
+    newBlog = 
+    {
+        title: "Burgers in town",
+        author: "MacDonald King",
+        url: "someurl.url/mk/burgersintown"
+    }
+    const added = await api.post('/api/blogs').send(newBlog)
+    assert(added.body.likes === 0)
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
