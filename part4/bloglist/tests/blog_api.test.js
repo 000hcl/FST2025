@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -55,3 +55,29 @@ test('blogs are returned as json', async () => {
     const response = await api.get('/api/blogs')
     assert(response.body[0].id.length > 0)
   })
+
+test('adding a new valid blog', async () => {
+    newBlog = 
+    {
+        title: "Burgers in town",
+        author: "MacDonald King",
+        url: "someurl.url/mk/burgersintown",
+        likes: 34
+    }
+    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+
+    const currentBlogsResponse = await api.get('/api/blogs')
+
+    assert.strictEqual(currentBlogsResponse.body.length, initialBlogs.length+1)
+
+    const lastBlog = currentBlogsResponse.body.at(-1)
+
+    assert(lastBlog.title.includes("Burgers in town"))
+    assert(lastBlog.url.includes("someurl.url/mk/burgersintown"))
+    assert(lastBlog.author.includes("MacDonald King"))
+    
+})
+
+after(async () => {
+    await mongoose.connection.close()
+})
