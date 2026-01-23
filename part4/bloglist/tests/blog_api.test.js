@@ -50,3 +50,8 @@ test('blogs are returned as json', async () => {
   after(async () => {
     await mongoose.connection.close()
   })
+
+  test('blogs have property id', async () => {
+    const response = await api.get('/api/blogs')
+    assert(response.body[0].id.length > 0)
+  })
