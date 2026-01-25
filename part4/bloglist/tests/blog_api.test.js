@@ -89,6 +89,26 @@ test('adding a new blog with no likes defaults to 0', async () => {
     assert(added.body.likes === 0)
 })
 
+test('adding with missing title results in bad request', async () => {
+    newBlog = 
+    {
+        author: "MacDonald King",
+        url: "someurl.url/mk/burgersintown"
+    }
+    await api.post('/api/blogs').send(newBlog).expect(400)
+
+})
+
+test('adding with missing url results in bad request', async () => {
+    newBlog = 
+    {
+        title: "Burgers in town",
+        author: "MacDonald King",
+    }
+    await api.post('/api/blogs').send(newBlog).expect(400)
+
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
