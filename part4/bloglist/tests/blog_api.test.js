@@ -119,6 +119,10 @@ describe('when there is initially some blogs saved', () => {
             const newResponse = await api.get('/api/blogs')
             assert(newResponse.body.length === initialBlogs.length-1)
         })
+
+        test('with invalid id causes bad request', async () => {
+            await api.delete('/api/blogs/invalidID').expect(400)
+        })
     })
  
 })
