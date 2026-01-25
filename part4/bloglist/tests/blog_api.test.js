@@ -59,7 +59,7 @@ describe('when there is initially some blogs saved', () => {
     
     describe('adding a new blog', () => {
         test('succeeds with a valid blog', async () => {
-            newBlog = 
+            const newBlog = 
             {
                 title: "Burgers in town",
                 author: "MacDonald King",
@@ -81,7 +81,7 @@ describe('when there is initially some blogs saved', () => {
         })
         
         test('with no likes defaults to 0', async () => {
-            newBlog = 
+            const newBlog = 
             {
                 title: "Burgers in town",
                 author: "MacDonald King",
@@ -92,7 +92,7 @@ describe('when there is initially some blogs saved', () => {
         })
         
         test('with missing title results in bad request', async () => {
-            newBlog = 
+            const newBlog = 
             {
                 author: "MacDonald King",
                 url: "someurl.url/mk/burgersintown"
@@ -102,12 +102,22 @@ describe('when there is initially some blogs saved', () => {
         })
         
         test('with missing url results in bad request', async () => {
-            newBlog = 
+            const newBlog = 
             {
                 title: "Burgers in town",
                 author: "MacDonald King",
             }
             await api.post('/api/blogs').send(newBlog).expect(400)
+        })
+    })
+    describe('deleting a blog', () => {
+        test('with a valid id is successful', async () => {
+            const response = await api.get('/api/blogs')
+            const idToDelete = response.body[0].id
+
+            await api.delete(`/api/blogs/${idToDelete}`).expect(204)
+            const newResponse = await api.get('/api/blogs')
+            assert(newResponse.body.length === initialBlogs.length-1)
         })
     })
  
