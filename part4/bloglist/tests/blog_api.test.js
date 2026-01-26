@@ -124,6 +124,40 @@ describe('when there is initially some blogs saved', () => {
             await api.delete('/api/blogs/invalidID').expect(400)
         })
     })
+    describe('updating a blog', () => {
+        const updatedBlog = 
+            {
+                title: "On the Veg: the bleeding veg",
+                author: "Maverick Beeson",
+                url: "someurl.url/mb/ontheveg",
+                likes: 3999
+            }
+        test('with a valid id is successful', async () => {
+            const response = await api.get('/api/blogs')
+            const idToUpate = response.body[0].id
+            
+            await api.put(`/api/blogs/${idToUpate}`).send(updatedBlog).expect(201)
+
+            const updatedResponse = await api.get('/api/blogs')
+            const updated = updatedResponse.body[0]
+            updatedBlog.id = idToUpate
+            assert.deepStrictEqual(updated, updatedBlog)
+        })
+
+        test('with invalid id causes bad request', async () => {
+            await api.put(`/api/blogs/invalidID`).send(updatedBlog).expect(400)
+        })
+
+        test('fails with bad data', async () => {
+            const badData = {
+                title: "title"
+            }
+            const response = await api.get('/api/blogs')
+            const idToUpate = response.body[0].id
+            await api.put(`/api/blogs/${idToUpate}`).send(badData).expect(400)
+
+        })
+    })
  
 })
 
