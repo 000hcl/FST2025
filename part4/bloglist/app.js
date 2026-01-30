@@ -12,9 +12,13 @@ app.use(express.json())
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl, { family: 4 })
 
+app.use(middleware.tokenExtractor)
+
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
+
 app.use(middleware.errorHandler)
+
 
 module.exports = app
