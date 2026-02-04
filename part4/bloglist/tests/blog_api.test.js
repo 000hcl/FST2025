@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const helper = require('../utils/test_helper')
 
 const api = supertest(app)
 
@@ -30,6 +31,7 @@ const initialBlogs = [
 
 describe('when there is initially some blogs saved', () => {
     beforeEach(async () => {
+        
         await Blog.deleteMany({})
         const blogObjects = initialBlogs.map(b => new Blog(b))
         const promiseArray = blogObjects.map(blog => blog.save())
@@ -55,10 +57,10 @@ describe('when there is initially some blogs saved', () => {
       test('blogs have property id', async () => {
         const response = await api.get('/api/blogs')
         assert(response.body[0].id.length > 0)
-      })
+    })
     
     describe('adding a new blog', () => {
-        test('succeeds with a valid blog', async () => {
+        test('fails without token', async () => {
             const newBlog = 
             {
                 title: "Burgers in town",
@@ -66,7 +68,19 @@ describe('when there is initially some blogs saved', () => {
                 url: "someurl.url/mk/burgersintown",
                 likes: 34
             }
-            await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+            await api.post('/api/blogs').send(newBlog).expect(401)
+        })
+        test('succeeds with a valid blog', async () => {
+            const {token, id} = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
+            const newBlog = 
+            {
+                title: "Burgers in town",
+                author: "MacDonald King",
+                url: "someurl.url/mk/burgersintown",
+                likes: 34,
+                user: id
+            }
+            await api.post('/api/blogs').set('Authorization', token).send(newBlog).expect(201).expect('Content-Type', /application\/json/)
         
             const currentBlogsResponse = await api.get('/api/blogs')
         
@@ -81,47 +95,56 @@ describe('when there is initially some blogs saved', () => {
         })
         
         test('with no likes defaults to 0', async () => {
+            const {token, id} = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
             const newBlog = 
             {
                 title: "Burgers in town",
                 author: "MacDonald King",
-                url: "someurl.url/mk/burgersintown"
+                url: "someurl.url/mk/burgersintown",
+                user: id
             }
-            const added = await api.post('/api/blogs').send(newBlog)
+            const added = await api.post('/api/blogs').set('Authorization', token).send(newBlog)
             assert(added.body.likes === 0)
         })
         
         test('with missing title results in bad request', async () => {
+            const {token, id} = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
             const newBlog = 
             {
                 author: "MacDonald King",
-                url: "someurl.url/mk/burgersintown"
+                url: "someurl.url/mk/burgersintown",
+                user: id
             }
-            await api.post('/api/blogs').send(newBlog).expect(400)
+            await api.post('/api/blogs').set('Authorization', token).send(newBlog).expect(400)
         
         })
         
         test('with missing url results in bad request', async () => {
+            const {token, id} = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
             const newBlog = 
             {
                 title: "Burgers in town",
                 author: "MacDonald King",
+                user: id
             }
-            await api.post('/api/blogs').send(newBlog).expect(400)
+            await api.post('/api/blogs').set('Authorization', token).send(newBlog).expect(400)
         })
     })
     describe('deleting a blog', () => {
         test('with a valid id is successful', async () => {
-            const response = await api.get('/api/blogs')
-            const idToDelete = response.body[0].id
+            const user = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
+            const blog = await helper.createBlogWithUserId(user.id)
+            const idToDelete = blog._id.toString()
 
-            await api.delete(`/api/blogs/${idToDelete}`).expect(204)
+            await api.delete(`/api/blogs/${idToDelete}`).set('Authorization', user.token).expect(204)
+
             const newResponse = await api.get('/api/blogs')
-            assert(newResponse.body.length === initialBlogs.length-1)
+            assert(newResponse.body.length === initialBlogs.length)
         })
 
         test('with invalid id causes bad request', async () => {
-            await api.delete('/api/blogs/invalidID').expect(400)
+            const user = await helper.createUserAndReturnTokenAndId(process.env.SECRET)
+            await api.delete('/api/blogs/invalidID').set('Authorization', user.token).expect(400)
         })
     })
     describe('updating a blog', () => {
