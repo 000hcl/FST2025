@@ -3,7 +3,6 @@ import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import CreateForm from './components/CreateForm'
-import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,9 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+
   const [notification, setNotification] = useState(null)
   const [error, setError] = useState(null)
 
@@ -32,6 +29,38 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const handleCreate = async ({title, author, url}) => {
+    const newBlog = { title:title, author:author, url:url }
+
+    try {
+      const saved = await blogService.create(newBlog)
+      const message = `A new blog ${saved.title} by ${saved.author} added`
+      setBlogs(blogs.concat(saved))
+      notify(message)
+      return true
+
+    } catch (error) {
+      const errorMessage = error.response.data.error
+      notifyError(errorMessage)
+      return false
+      
+    }
+  }
+
+  const notify = ( message ) => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
+  const notifyError = (message) => {
+    setError(message)
+    setTimeout(() => {
+      setError(null)
+    }, 5000)
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -67,29 +96,7 @@ const App = () => {
     }, 5000)
   }
 
-  const handleCreate = async (event) => {
-    event.preventDefault()
-    const newBlog = { title:title, author:author, url:url }
-
-    try {
-
-      const saved = await blogService.create(newBlog)
-
-      setNotification(`A new blog ${saved.title} by ${saved.author} added`)
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-    } catch (error) {
-      setError(error.response.data.error)
-      setTimeout(() => {
-        setError(null)
-      }, 5000)
-      
-    }
-  }
+  
 
 
 
@@ -115,17 +122,7 @@ const App = () => {
       <div>
         Logged in as { user.name } <button onClick={handleLogout}>log out</button>
       </div>
-      <Togglable buttonLabel='create new blog'>
-        <CreateForm
-          handleCreate={handleCreate}
-          title={title}
-          handleTitle={({ target }) => setTitle(target.value)}
-          author={author}
-          handleAuthor={({ target }) => setAuthor(target.value)}
-          url={url}
-          handleUrl={({ target }) => setUrl(target.value)} />
-      </Togglable>
-      
+      <CreateForm createBlog={handleCreate} />
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
