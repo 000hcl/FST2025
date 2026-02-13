@@ -96,6 +96,15 @@ const App = () => {
     }, 5000)
   }
 
+  const handleLike = async (blog) => {
+    const newBlog = await blogService.like(blog)
+    console.log(newBlog);
+    blogService.getAll().then(blogs =>
+      setBlogs(blogs)
+    )
+    
+  }
+
   
 
 
@@ -125,7 +134,7 @@ const App = () => {
       <CreateForm createBlog={handleCreate} />
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeFunction={handleLike} />
       )}
       
     </div>

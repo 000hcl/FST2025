@@ -1,11 +1,12 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeFunction }) => {
   const [expanded, setExpanded] = useState(false)
 
   const toggleExpanded = () => {
     setExpanded(!expanded)
   }
+
 
   const blogStyle = {
     paddingTop: 10,
@@ -24,7 +25,7 @@ const Blog = ({ blog }) => {
       <div>
         {blog.url}
         <br/>
-        {blog.likes} likes <button>like</button>
+        {blog.likes} likes <button onClick={()=>likeFunction(blog)}>like</button>
         <br/>
         {blog.user.name}
       </div>
