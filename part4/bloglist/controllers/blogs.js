@@ -50,7 +50,12 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 
 blogsRouter.put('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
+  console.log('found blog', blog);
+  
+  
   const { title, author, url, likes, user } = request.body
+  console.log('user is', user);
+
 
   if (!blog) {
     return response.status(404).end()
@@ -60,9 +65,11 @@ blogsRouter.put('/:id', async (request, response) => {
   blog.author = author
   blog.url = url
   blog.likes = likes
-  blog.user = await User.findById(user)._id
+
 
   const savedBlog = await blog.save()
+  console.log('saved blog',savedBlog);
+  
   response.status(201).json(savedBlog)
 
 })
