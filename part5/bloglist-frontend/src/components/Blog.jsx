@@ -29,26 +29,24 @@ const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
   return(
     <div style={blogStyle}>
       <div>
-      {blog.title} {blog.author} <button onClick={toggleExpanded}>{ expanded ? 'hide' :'view'}</button>
+        {blog.title} {blog.author} <button onClick={toggleExpanded}>{ expanded ? 'hide' :'view'}</button>
       </div>
       {expanded &&
       <div>
         {blog.url}
         <br/>
-        {blog.likes} likes <button onClick={()=>likeFunction(blog)}>like</button>
+        {blog.likes} likes <button onClick={() => likeFunction(blog)}>like</button>
         <br/>
         {blog.user.name}
         {isUser() &&
           <div>
-            <button onClick={()=>deleteFunction(blog)}>delete</button>
+            <button onClick={() => deleteFunction(blog)}>delete</button>
           </div>
         }
       </div>
       }
     </div>
-    
   )
-  
 }
 
 export default Blog

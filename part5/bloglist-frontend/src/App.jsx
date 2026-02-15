@@ -16,9 +16,7 @@ const App = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs.sort((a,b)=>b.likes-a.likes))
-    )
+    getAndSetBlogs()
   }, [])
 
   useEffect(() => {
@@ -30,18 +28,21 @@ const App = () => {
     }
   }, [])
 
-  const handleCreate = async ({title, author, url}) => {
+  const getAndSetBlogs = async () => {
+    const blogs = await blogService.getAll()
+    setBlogs(blogs.sort((a,b) => b.likes-a.likes))
+  }
+
+  const handleCreate = async ({ title, author, url }) => {
     const newBlog = { title:title, author:author, url:url }
 
     try {
       const saved = await blogService.create(newBlog)
       const message = `A new blog ${saved.title} by ${saved.author} added`
-      console.log('saved is');
-      
-      console.log(saved);
-      console.log('user', saved.user);
-      
-      
+      console.log('saved is')
+      console.log(saved)
+      console.log('user', saved.user)
+
       setBlogs(blogs.concat(saved))
       notify(message)
       return true
@@ -50,7 +51,7 @@ const App = () => {
       const errorMessage = error.response.data.error
       notifyError(errorMessage)
       return false
-      
+
     }
   }
 
@@ -72,7 +73,6 @@ const App = () => {
     event.preventDefault()
 
     try {
-      
       const user = await loginService.logIn(username, password)
 
       window.localStorage.setItem(
@@ -84,10 +84,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setError('Invalid username or password')
-      setTimeout(() => {
-        setError(null)
-      }, 5000)
+      notifyError('Invalid username or password.')
     }
   }
 
@@ -104,11 +101,8 @@ const App = () => {
 
   const handleLike = async (blog) => {
     const newBlog = await blogService.like(blog)
-    console.log(newBlog);
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs.sort((a,b)=>b.likes-a.likes))
-    )
-    
+    console.log(newBlog)
+    getAndSetBlogs()
   }
 
   const handleDelete = async (blog) => {
@@ -116,24 +110,20 @@ const App = () => {
     if (deleteOk) {
       try {
         const response = await blogService.deleteBlog(blog)
-        console.log('response is');
-        
-        console.log(response);
+        console.log('response is')
+
+        console.log(response)
         notify(`${blog.title} was successfully deleted`)
       } catch (error) {
-        console.log('error found', error);
-        
+        console.log('error found', error)
+
         const message = 'an error occurred'
-  
         notifyError(message)
       }
-  
-      blogService.getAll().then(blogs =>
-        setBlogs(blogs.sort((a,b)=>b.likes-a.likes))
-      )
+
+      getAndSetBlogs()
 
     }
-    
   }
 
 
@@ -144,13 +134,13 @@ const App = () => {
         <Notification message={error} classname={'error'}/>
         <Notification message={notification} classname={'notification'}/>
         <LoginForm
-        username={username}
-        handleLogin={handleLogin}
-        password={password}
-        usernameChange={({ target }) => setUsername(target.value)}
-        passwordChange={({ target }) => setPassword(target.value)} />
+          username={username}
+          handleLogin={handleLogin}
+          password={password}
+          usernameChange={({ target }) => setUsername(target.value)}
+          passwordChange={({ target }) => setPassword(target.value)} />
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} user={user} likeFunction={handleLike} />
+          <Blog key={blog.id} blog={blog} user={user} likeFunction={handleLike} />
         )}
       </div>
     )
@@ -168,7 +158,7 @@ const App = () => {
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} user={user} likeFunction={handleLike} deleteFunction={handleDelete} />
       )}
-      
+
     </div>
   )
 }
