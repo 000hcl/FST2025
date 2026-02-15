@@ -36,6 +36,12 @@ const App = () => {
     try {
       const saved = await blogService.create(newBlog)
       const message = `A new blog ${saved.title} by ${saved.author} added`
+      console.log('saved is');
+      
+      console.log(saved);
+      console.log('user', saved.user);
+      
+      
       setBlogs(blogs.concat(saved))
       notify(message)
       return true
@@ -105,7 +111,30 @@ const App = () => {
     
   }
 
+  const handleDelete = async (blog) => {
+    const deleteOk = window.confirm(`Are you sure you want to delete ${blog.title}?`)
+    if (deleteOk) {
+      try {
+        const response = await blogService.deleteBlog(blog)
+        console.log('response is');
+        
+        console.log(response);
+        notify(`${blog.title} was successfully deleted`)
+      } catch (error) {
+        console.log('error found', error);
+        
+        const message = 'an error occurred'
   
+        notifyError(message)
+      }
+  
+      blogService.getAll().then(blogs =>
+        setBlogs(blogs.sort((a,b)=>b.likes-a.likes))
+      )
+
+    }
+    
+  }
 
 
 
@@ -120,6 +149,9 @@ const App = () => {
         password={password}
         usernameChange={({ target }) => setUsername(target.value)}
         passwordChange={({ target }) => setPassword(target.value)} />
+        {blogs.map(blog =>
+        <Blog key={blog.id} blog={blog} user={user} likeFunction={handleLike} />
+        )}
       </div>
     )
   }
@@ -134,7 +166,7 @@ const App = () => {
       <CreateForm createBlog={handleCreate} />
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeFunction={handleLike} />
+        <Blog key={blog.id} blog={blog} user={user} likeFunction={handleLike} deleteFunction={handleDelete} />
       )}
       
     </div>

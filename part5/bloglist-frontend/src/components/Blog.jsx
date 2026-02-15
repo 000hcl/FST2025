@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, likeFunction }) => {
+const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
   const [expanded, setExpanded] = useState(false)
 
   const toggleExpanded = () => {
@@ -16,6 +16,16 @@ const Blog = ({ blog, likeFunction }) => {
     marginBottom: 5
   }
 
+  const isUser = () => {
+    if (user === null) {
+      return false
+    }
+    if (user.username === blog.user.username) {
+      return true
+    }
+    return false
+  }
+
   return(
     <div style={blogStyle}>
       <div>
@@ -28,6 +38,11 @@ const Blog = ({ blog, likeFunction }) => {
         {blog.likes} likes <button onClick={()=>likeFunction(blog)}>like</button>
         <br/>
         {blog.user.name}
+        {isUser() &&
+          <div>
+            <button onClick={()=>deleteFunction(blog)}>delete</button>
+          </div>
+        }
       </div>
       }
     </div>
