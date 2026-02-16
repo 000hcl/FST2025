@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 test('renders title and author but not expanded information by default', () => {
@@ -28,3 +29,27 @@ test('renders title and author but not expanded information by default', () => {
 
 })
 
+test('renders expanded information when button is clicked', async () => {
+  const loggedInUser = {
+    name: 'test man',
+    username: 'testing2026'
+  }
+  const blog = {
+    title: 'testing in react',
+    author: 'some guy',
+    url: 'www.testing.com/react',
+    likes: 600,
+    user: loggedInUser
+  }
+  render(<Blog blog={blog} user={loggedInUser}/>)
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
+
+
+  const url = screen.queryByText('www.testing.com/react')
+  const likes = screen.queryByText('600 likes')
+
+  expect(likes).toBeDefined()
+  expect(url).toBeDefined()
+})
