@@ -53,3 +53,28 @@ test('renders expanded information when button is clicked', async () => {
   expect(likes).toBeDefined()
   expect(url).toBeDefined()
 })
+
+test('like button pressed twice calls function twice', async () => {
+  const loggedInUser = {
+    name: 'test man',
+    username: 'testing2026'
+  }
+  const blog = {
+    title: 'testing in react',
+    author: 'some guy',
+    url: 'www.testing.com/react',
+    likes: 600,
+    user: loggedInUser
+  }
+  const mockHandler = vi.fn()
+  render(<Blog blog={blog} user={loggedInUser} likeFunction={mockHandler}/>)
+
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
