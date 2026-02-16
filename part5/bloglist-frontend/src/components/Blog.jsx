@@ -32,7 +32,7 @@ const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
         {blog.title} {blog.author} <button onClick={toggleExpanded}>{ expanded ? 'hide' :'view'}</button>
       </div>
       {expanded &&
-      <div>
+      <div id='expanded'>
         {blog.url}
         <br/>
         {blog.likes} likes <button onClick={() => likeFunction(blog)}>like</button>
