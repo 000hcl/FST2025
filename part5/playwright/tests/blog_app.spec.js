@@ -52,5 +52,21 @@ describe('Blog app', () => {
             await expect(page.getByText('A new blog Testing 101 by Johnny Test added')).toBeVisible()
             await expect(page.getByText('Testing 101 Johnny Test')).toBeVisible()
         })
-      })
+        describe('when a blog has been created', () => {
+            beforeEach(async ({ page }) => {
+                await page.getByText('create new blog').click()
+                await page.getByLabel('title').fill('Testing 101')
+                await page.getByLabel('author').fill('Johnny Test')
+                await page.getByLabel('url').fill('www.testing.com/101')
+                await page.getByRole('button', {name:'create'}).click()
+            })
+            test('it can be liked', async ({ page }) => {
+                await expect(page.getByText('Testing 101 Johnny Test')).toBeVisible()
+                await page.getByRole('button', {name: 'view'}).click()
+                await expect(page.getByText('0 likes')).toBeVisible()
+                await page.getByRole('button', {name: 'like'}).click()
+                await expect(page.getByText('1 likes')).toBeVisible()
+            })
+        })
+    })
   })
