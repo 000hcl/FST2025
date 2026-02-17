@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test --project=chromium --project=firefox",
-    "test:report": "playwright show-report",
-    "start:test": "cross-env NODE_ENV=test node --watch index.js"
+    "test:report": "playwright show-report"
   },
   "author": "",
   "license": "ISC",
