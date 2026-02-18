@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createBlogWith } = require('./helper')
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
@@ -8,6 +9,13 @@ describe('Blog app', () => {
                 username: 'testguy',
                 name: 'John Tester',
                 password: 'secretpasswordis45'
+            }
+        })
+        await request.post('http://localhost:3003/api/users', {
+            data: {
+                username: 'greg',
+                name: 'Greg Craig',
+                password: 'secretive'
             }
         })
 
@@ -22,43 +30,29 @@ describe('Blog app', () => {
     })
     describe('Login', () => {
         test('succeeds with correct credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('testguy')
-            await page.getByLabel('password').fill('secretpasswordis45')
-            await page.getByText('login').click()
+            await loginWith(page, 'testguy', 'secretpasswordis45')
             await expect(page.getByText('Logged in as John Tester')).toBeVisible()
         })
     
         test('fails with wrong credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('testguy')
-            await page.getByLabel('password').fill('wrongpassword')
-            await page.getByText('login').click()
+            await loginWith(page, 'testguy', 'wrongpassword')
             await expect(page.getByText('Invalid username or password.')).toBeVisible()
         })
     })
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
-            await page.getByLabel('username').fill('testguy')
-            await page.getByLabel('password').fill('secretpasswordis45')
-            await page.getByText('login').click()
+            await loginWith(page, 'testguy', 'secretpasswordis45')
         })
       
         test('a new blog can be created', async ({ page }) => {
-            await page.getByText('create new blog').click()
-            await page.getByLabel('title').fill('Testing 101')
-            await page.getByLabel('author').fill('Johnny Test')
-            await page.getByLabel('url').fill('www.testing.com/101')
-            await page.getByRole('button', {name:'create'}).click()
+            await createBlogWith(page, 'Testing 101', 'Johnny Test', 'www.testing.com/101')
 
             await expect(page.getByText('A new blog Testing 101 by Johnny Test added')).toBeVisible()
             await expect(page.getByText('Testing 101 Johnny Test')).toBeVisible()
         })
         describe('when a blog has been created', () => {
             beforeEach(async ({ page }) => {
-                await page.getByText('create new blog').click()
-                await page.getByLabel('title').fill('Testing 101')
-                await page.getByLabel('author').fill('Johnny Test')
-                await page.getByLabel('url').fill('www.testing.com/101')
-                await page.getByRole('button', {name:'create'}).click()
+                await createBlogWith(page, 'Testing 101', 'Johnny Test', 'www.testing.com/101')
             })
             test('it can be liked', async ({ page }) => {
                 await page.getByRole('button', {name: 'view'}).click()
@@ -73,6 +67,17 @@ describe('Blog app', () => {
                 await expect(page.getByText('Testing 101 was successfully deleted')).toBeVisible()
                 await expect(page.getByText('Testing 101 Johnny Test')).not.toBeVisible()
 
+            })
+            describe('with multiple users', () => {
+                beforeEach(async ({ page }) => {
+                    await page.getByText('log out').click()
+                    await loginWith(page, 'greg', 'secretive')
+                })
+                test('other users blog does not have delete button', async ({ page }) => {
+                    await page.getByRole('button', {name: 'view'}).click()
+                    await expect(page.getByText('www.testing.com/101')).toBeVisible()
+                    await expect(page.getByText('delete')).not.toBeVisible()
+                })
             })
         })
     })
