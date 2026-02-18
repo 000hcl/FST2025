@@ -61,11 +61,18 @@ describe('Blog app', () => {
                 await page.getByRole('button', {name:'create'}).click()
             })
             test('it can be liked', async ({ page }) => {
-                await expect(page.getByText('Testing 101 Johnny Test')).toBeVisible()
                 await page.getByRole('button', {name: 'view'}).click()
                 await expect(page.getByText('0 likes')).toBeVisible()
                 await page.getByRole('button', {name: 'like'}).click()
                 await expect(page.getByText('1 likes')).toBeVisible()
+            })
+            test('the blog can be deleted', async ({ page }) => {
+                await page.getByRole('button', {name: 'view'}).click()
+                page.on('dialog', dialog => dialog.accept())
+                await page.getByRole('button', {name: 'delete'}).click()
+                await expect(page.getByText('Testing 101 was successfully deleted')).toBeVisible()
+                await expect(page.getByText('Testing 101 Johnny Test')).not.toBeVisible()
+
             })
         })
     })
