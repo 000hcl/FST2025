@@ -61,7 +61,7 @@ describe('Blog app', () => {
                 await expect(page.getByText('1 likes')).toBeVisible()
             })
             test('the blog can be deleted', async ({ page }) => {
-                await page.getByRole('button', {name: 'view'}).click()
+                await page.getByText('Testing 101 Johnny Test').getByRole('button', {name: 'view'}).click()
                 page.on('dialog', dialog => dialog.accept())
                 await page.getByRole('button', {name: 'delete'}).click()
                 await expect(page.getByText('Testing 101 was successfully deleted')).toBeVisible()
@@ -74,9 +74,18 @@ describe('Blog app', () => {
                     await loginWith(page, 'greg', 'secretive')
                 })
                 test('other users blog does not have delete button', async ({ page }) => {
-                    await page.getByRole('button', {name: 'view'}).click()
-                    await expect(page.getByText('www.testing.com/101')).toBeVisible()
+                    await page.getByText('Testing 101 Johnny Test').getByRole('button', {name: 'view'}).click()
                     await expect(page.getByText('delete')).not.toBeVisible()
+                })
+                test('blogs are ordered according to likes', async ({ page }) => {
+                    await createBlogWith(page, 'experts on rocks', 'Brock Stone', 'www.brockstone.com/1')
+                    const expectedBeforeLikes = ['Testing 101 Johnny Test', 'experts on rocks Brock Stone']
+                    await expect(page.locator('data-testid=blog')).toContainText(expectedBeforeLikes)
+                    await page.getByText('experts on rocks Brock Stone').getByRole('button', {name: 'view'}).click()
+                    await page.getByRole('button', {name: 'like'}).click()
+                    await page.getByRole('button', {name: 'like'}).click()
+                    const expectedAfterLikes = ['experts on rocks Brock Stone', 'Testing 101 Johnny Test']
+                    await expect(page.locator('data-testid=blog')).toContainText(expectedAfterLikes)
                 })
             })
         })

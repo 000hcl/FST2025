@@ -27,7 +27,7 @@ const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
   }
 
   return(
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid='blog'>
       <div>
         {blog.title} {blog.author} <button onClick={toggleExpanded}>{ expanded ? 'hide' :'view'}</button>
       </div>
