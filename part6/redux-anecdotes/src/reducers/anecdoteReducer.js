@@ -17,7 +17,7 @@ const asObject = anecdote => {
   }
 }
 
-const initialState = anecdotesAtStart.map(asObject)
+const initialState = anecdotesAtStart.map(asObject).sort((a, b) => a.likes-b.likes)
 
 
 const reducer = (state = initialState, action) => {
@@ -28,10 +28,10 @@ const reducer = (state = initialState, action) => {
       const id = action.payload.id
       const toVote = state.find(n => n.id === id)
       const voted = { ...toVote, votes: toVote.votes+1}
-      return state.map(a => a.id !== id ? a : voted)
+      return state.map(a => a.id !== id ? a : voted).sort((a, b) => b.votes-a.votes)
+
     }
     case 'CREATE': {
-      //TODO
       return state.concat(action.payload)
     }
     default:
