@@ -30,7 +30,12 @@ const reducer = (state = initialState, action) => {
       const voted = { ...toVote, votes: toVote.votes+1}
       return state.map(a => a.id !== id ? a : voted)
     }
+    case 'CREATE': {
+      //TODO
+      return state.concat(action.payload)
+    }
     default:
+      
       return state
   }
 
@@ -40,6 +45,17 @@ export const voteFor = id => {
   return {
     type: 'VOTE',
     payload: { id:id }
+  }
+}
+
+export const create = content => {
+  return {
+    type: 'CREATE',
+    payload: {
+      id: getId(),
+      content: content,
+      votes: 0
+    }
   }
 }
 
