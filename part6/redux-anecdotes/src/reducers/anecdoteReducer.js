@@ -20,9 +20,7 @@ const asObject = anecdote => {
 const initialState = anecdotesAtStart.map(asObject).sort((a, b) => a.likes-b.likes)
 
 
-const reducer = (state = initialState, action) => {
-  // console.log('state now: ', state)
-  // console.log('action', action)
+const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'VOTE': {
       const id = action.payload.id
@@ -35,7 +33,6 @@ const reducer = (state = initialState, action) => {
       return state.concat(action.payload)
     }
     default:
-      
       return state
   }
 
@@ -59,4 +56,4 @@ export const create = content => {
   }
 }
 
-export default reducer
+export default anecdoteReducer
