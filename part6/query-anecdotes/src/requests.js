@@ -23,3 +23,21 @@ export const createAnecdote = async (anecdote) => {
     
     return await response.json()
 }
+
+
+export const voteFor = async (anecdote) => {
+    const url = `${baseUrl}/${anecdote.id}`
+  
+    const newObject = {...anecdote, votes: anecdote.votes+1}
+    const options = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newObject),
+    }
+    const response = await fetch(url, options)
+    
+    if (!response.ok) {
+      throw new Error('Failed to vote')
+    }
+    return await response.json()
+}
