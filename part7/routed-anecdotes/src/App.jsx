@@ -55,9 +55,9 @@ const Footer = () => (
 
 const CreateNew = (props) => {
   const navigate = useNavigate()
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const { reset: creset, ...content } = useField('text')
+  const { reset: areset, ...author } = useField('text')
+  const { reset: ireset,...info } = useField('text')
 
 
   const handleSubmit = (e) => {
@@ -70,6 +70,12 @@ const CreateNew = (props) => {
     })
     navigate('/')
     props.notify(`A new anecdote "${content.value}" created!`)
+  }
+
+  const handleReset = () => {
+    creset()
+    ireset()
+    areset()
   }
 
   return (
@@ -89,7 +95,9 @@ const CreateNew = (props) => {
           <input {...info} />
         </div>
         <button>create</button>
+        
       </form>
+      <button onClick={handleReset}>reset</button>
     </div>
   )
 
