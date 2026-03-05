@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import NotificationContext from './NotificationContext'
+import UserContext from './UserContext'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
@@ -12,16 +13,16 @@ const App = () => {
   const queryClient = useQueryClient()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const { notificationDispatch } = useContext(NotificationContext)
+  const { user, userDispatch } = useContext(UserContext)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      const userdata = JSON.parse(loggedUserJSON)
+      userDispatch({ type: 'SETUSER', payload: userdata })
+      blogService.setToken(userdata.token)
     }
   }, [])
 
@@ -85,12 +86,12 @@ const App = () => {
     event.preventDefault()
 
     try {
-      const user = await loginService.logIn(username, password)
+      const userLogin = await loginService.logIn(username, password)
 
-      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
-      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(userLogin))
+      blogService.setToken(userLogin.token)
 
-      setUser(user)
+      userDispatch({ type: 'SETUSER', payload: userLogin })
       setUsername('')
       setPassword('')
     } catch {
@@ -100,7 +101,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBloglistUser')
-    setUser(null)
+    userDispatch({ type: 'REMOVEUSER' })
     notify('You have been successfully logged out')
   }
 
