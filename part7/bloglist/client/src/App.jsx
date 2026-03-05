@@ -6,19 +6,15 @@ import LoginForm from './components/LoginForm'
 import CreateForm from './components/CreateForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
-
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const queryClient = useQueryClient()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const { notificationDispatch } = useContext(NotificationContext)
-
-  useEffect(() => {
-    getAndSetBlogs()
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -29,22 +25,12 @@ const App = () => {
     }
   }, [])
 
-  const getAndSetBlogs = async () => {
-    const blogs = await blogService.getAll()
-    setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-  }
-
   const handleCreate = async ({ title, author, url }) => {
     const newBlog = { title: title, author: author, url: url }
 
     try {
-      const saved = await blogService.create(newBlog)
-      const message = `A new blog ${saved.title} by ${saved.author} added`
-      console.log('saved is')
-      console.log(saved)
-      console.log('user', saved.user)
-
-      setBlogs(blogs.concat(saved))
+      const message = `A new blog ${title} by ${author} added`
+      createMutation.mutate(newBlog)
       notify(message)
       return true
     } catch (error) {
@@ -54,8 +40,19 @@ const App = () => {
     }
   }
 
+  const createMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (error) => {
+      notify(error.request.response)
+      console.log(error)
+    }
+  })
+
   const notify = (message) => {
-    notificationDispatch({ type:'NOTIFY', payload:message })
+    notificationDispatch({ type: 'NOTIFY', payload: message })
     setTimeout(() => {
       notificationDispatch({ type: 'NULLIFY' })
     }, 5000)
@@ -87,7 +84,6 @@ const App = () => {
   const handleLike = async (blog) => {
     const newBlog = await blogService.like(blog)
     console.log(newBlog)
-    getAndSetBlogs()
   }
 
   const handleDelete = async (blog) => {
@@ -108,7 +104,38 @@ const App = () => {
         notify(message)
       }
 
-      getAndSetBlogs()
+      //getAndSetBlogs()
+    }
+  }
+
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  })
+
+  const blogs = result.data
+
+  const renderBlogs = () => {
+    if (result.isError) {
+      return <div>error</div>
+    }
+    if (result.isLoading) {
+      return <div>loading...</div>
+    } else {
+      return (
+        <div>
+          {blogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              likeFunction={handleLike}
+            />
+          ))}
+        </div>
+      )
     }
   }
 
@@ -123,14 +150,7 @@ const App = () => {
           usernameChange={({ target }) => setUsername(target.value)}
           passwordChange={({ target }) => setPassword(target.value)}
         />
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            likeFunction={handleLike}
-          />
-        ))}
+        {renderBlogs()}
       </div>
     )
   }
@@ -143,15 +163,7 @@ const App = () => {
       </div>
       <CreateForm createBlog={handleCreate} />
 
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          likeFunction={handleLike}
-          deleteFunction={handleDelete}
-        />
-      ))}
+      {renderBlogs()}
     </div>
   )
 }
