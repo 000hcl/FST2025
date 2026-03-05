@@ -1,35 +1,35 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const CreateForm = ({ createBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [visible, setVisible] = useState(false)
 
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    setVisible(!visible)
+  }
 
   const addBlog = async (event) => {
-    event.preventDefault();
-    const newBlog = { title: title, author: author, url: url };
+    event.preventDefault()
+    const newBlog = { title: title, author: author, url: url }
 
-    const createSuccessfully = await createBlog(newBlog);
+    const createSuccessfully = await createBlog(newBlog)
     if (createSuccessfully) {
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-      toggleVisibility();
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      toggleVisibility()
     }
-  };
+  }
 
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{"create new blog"}</button>
+        <button onClick={toggleVisibility}>{'create new blog'}</button>
       </div>
       <div style={showWhenVisible}>
         <div>
@@ -71,7 +71,7 @@ const CreateForm = ({ createBlog }) => {
         <button onClick={toggleVisibility}>cancel</button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreateForm;
+export default CreateForm

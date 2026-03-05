@@ -1,131 +1,121 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import Notification from "./components/Notification";
-import LoginForm from "./components/LoginForm";
-import CreateForm from "./components/CreateForm";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import { useState, useEffect, useContext } from 'react'
+import NotificationContext from './NotificationContext'
+import Blog from './components/Blog'
+import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
+import CreateForm from './components/CreateForm'
+import blogService from './services/blogs'
+import loginService from './services/login'
+
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
-  const [notification, setNotification] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getAndSetBlogs();
-  }, []);
+  const { notificationDispatch } = useContext(NotificationContext)
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
+    getAndSetBlogs()
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
   const getAndSetBlogs = async () => {
-    const blogs = await blogService.getAll();
-    setBlogs(blogs.sort((a, b) => b.likes - a.likes));
-  };
+    const blogs = await blogService.getAll()
+    setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+  }
 
   const handleCreate = async ({ title, author, url }) => {
-    const newBlog = { title: title, author: author, url: url };
+    const newBlog = { title: title, author: author, url: url }
 
     try {
-      const saved = await blogService.create(newBlog);
-      const message = `A new blog ${saved.title} by ${saved.author} added`;
-      console.log("saved is");
-      console.log(saved);
-      console.log("user", saved.user);
+      const saved = await blogService.create(newBlog)
+      const message = `A new blog ${saved.title} by ${saved.author} added`
+      console.log('saved is')
+      console.log(saved)
+      console.log('user', saved.user)
 
-      setBlogs(blogs.concat(saved));
-      notify(message);
-      return true;
+      setBlogs(blogs.concat(saved))
+      notify(message)
+      return true
     } catch (error) {
-      const errorMessage = error.response.data.error;
-      notifyError(errorMessage);
-      return false;
+      const errorMessage = error.response.data.error
+      notify(errorMessage)
+      return false
     }
-  };
+  }
 
   const notify = (message) => {
-    setNotification(message);
+    notificationDispatch({ type:'NOTIFY', payload:message })
     setTimeout(() => {
-      setNotification(null);
-    }, 5000);
-  };
-
-  const notifyError = (message) => {
-    setError(message);
-    setTimeout(() => {
-      setError(null);
-    }, 5000);
-  };
+      notificationDispatch({ type: 'NULLIFY' })
+    }, 5000)
+  }
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
-      const user = await loginService.logIn(username, password);
+      const user = await loginService.logIn(username, password)
 
-      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-      blogService.setToken(user.token);
+      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
+      blogService.setToken(user.token)
 
-      setUser(user);
-      setUsername("");
-      setPassword("");
+      setUser(user)
+      setUsername('')
+      setPassword('')
     } catch {
-      notifyError("Invalid username or password.");
+      notify('Invalid username or password.')
     }
-  };
+  }
 
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedBloglistUser");
-    setUser(null);
-    setNotification("You have been successfully logged out");
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
-  };
+    window.localStorage.removeItem('loggedBloglistUser')
+    setUser(null)
+    notify('You have been successfully logged out')
+  }
 
   const handleLike = async (blog) => {
-    const newBlog = await blogService.like(blog);
-    console.log(newBlog);
-    getAndSetBlogs();
-  };
+    const newBlog = await blogService.like(blog)
+    console.log(newBlog)
+    getAndSetBlogs()
+  }
 
   const handleDelete = async (blog) => {
     const deleteOk = window.confirm(
       `Are you sure you want to delete ${blog.title}?`,
-    );
+    )
     if (deleteOk) {
       try {
-        const response = await blogService.deleteBlog(blog);
-        console.log("response is");
+        const response = await blogService.deleteBlog(blog)
+        console.log('response is')
 
-        console.log(response);
-        notify(`${blog.title} was successfully deleted`);
+        console.log(response)
+        notify(`${blog.title} was successfully deleted`)
       } catch (error) {
-        console.log("error found", error);
+        console.log('error found', error)
 
-        const message = "an error occurred";
-        notifyError(message);
+        const message = 'an error occurred'
+        notify(message)
       }
 
-      getAndSetBlogs();
+      getAndSetBlogs()
     }
-  };
+  }
 
   if (user === null) {
     return (
       <div>
-        <Notification message={error} classname={"error"} />
-        <Notification message={notification} classname={"notification"} />
+        <Notification />
         <LoginForm
           username={username}
           handleLogin={handleLogin}
@@ -142,12 +132,11 @@ const App = () => {
           />
         ))}
       </div>
-    );
+    )
   }
   return (
     <div>
-      <Notification message={error} classname={"error"} />
-      <Notification message={notification} classname={"notification"} />
+      <Notification />
       <h2>blogs</h2>
       <div>
         Logged in as {user.name} <button onClick={handleLogout}>log out</button>
@@ -164,7 +153,7 @@ const App = () => {
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

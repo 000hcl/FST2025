@@ -1,41 +1,41 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
 
   const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
+    setExpanded(!expanded)
+  }
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   const isUser = () => {
     if (user === null) {
-      return false;
+      return false
     }
     if (user.username === blog.user.username) {
-      return true;
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   return (
     <div style={blogStyle} data-testid="blog">
       <div>
-        {blog.title} {blog.author}{" "}
-        <button onClick={toggleExpanded}>{expanded ? "hide" : "view"}</button>
+        {blog.title} {blog.author}{' '}
+        <button onClick={toggleExpanded}>{expanded ? 'hide' : 'view'}</button>
       </div>
       {expanded && (
         <div id="expanded">
           {blog.url}
           <br />
-          {blog.likes} likes{" "}
+          {blog.likes} likes{' '}
           <button onClick={() => likeFunction(blog)}>like</button>
           <br />
           {blog.user.name}
@@ -47,7 +47,7 @@ const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
