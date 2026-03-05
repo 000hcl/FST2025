@@ -7,7 +7,17 @@ import LoginForm from './components/LoginForm'
 import CreateForm from './components/CreateForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import UserView from './components/UserView'
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useParams,
+  useNavigate,
+} from 'react-router-dom'
 
 const App = () => {
   const queryClient = useQueryClient()
@@ -49,7 +59,7 @@ const App = () => {
     onError: (error) => {
       notify(error.request.response)
       console.log(error)
-    }
+    },
   })
 
   const likeMutation = useMutation({
@@ -60,7 +70,7 @@ const App = () => {
     onError: (error) => {
       notify(error.request.response)
       console.log(error)
-    }
+    },
   })
 
   const deleteMutation = useMutation({
@@ -72,7 +82,7 @@ const App = () => {
       notify('An error occurred in attempted deletion')
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
       console.log(error)
-    }
+    },
   })
 
   const notify = (message) => {
@@ -88,7 +98,10 @@ const App = () => {
     try {
       const userLogin = await loginService.logIn(username, password)
 
-      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(userLogin))
+      window.localStorage.setItem(
+        'loggedBloglistUser',
+        JSON.stringify(userLogin),
+      )
       blogService.setToken(userLogin.token)
 
       userDispatch({ type: 'SETUSER', payload: userLogin })
@@ -153,10 +166,26 @@ const App = () => {
     }
   }
 
-  if (user === null) {
+  const BlogView = () => {
     return (
       <div>
-        <Notification />
+        <CreateForm createBlog={handleCreate} />
+        {renderBlogs()}
+      </div>
+    )
+  }
+
+  return (
+    <Router>
+      <Notification />
+      <h2>blogs</h2>
+      {user && (
+        <div>
+          Logged in as {user.name}{' '}
+          <button onClick={handleLogout}>log out</button>
+        </div>
+      )}
+      {!user && (
         <LoginForm
           username={username}
           handleLogin={handleLogin}
@@ -164,21 +193,13 @@ const App = () => {
           usernameChange={({ target }) => setUsername(target.value)}
           passwordChange={({ target }) => setPassword(target.value)}
         />
-        {renderBlogs()}
-      </div>
-    )
-  }
-  return (
-    <div>
-      <Notification />
-      <h2>blogs</h2>
-      <div>
-        Logged in as {user.name} <button onClick={handleLogout}>log out</button>
-      </div>
-      <CreateForm createBlog={handleCreate} />
+      )}
+      <Routes>
+        <Route path='/' element={<BlogView/>}/>
+        <Route path='/users' element={<UserView/>}/>
+      </Routes>
 
-      {renderBlogs()}
-    </div>
+    </Router>
   )
 }
 
