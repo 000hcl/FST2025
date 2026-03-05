@@ -51,6 +51,29 @@ const App = () => {
     }
   })
 
+  const likeMutation = useMutation({
+    mutationFn: blogService.like,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (error) => {
+      notify(error.request.response)
+      console.log(error)
+    }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (error) => {
+      notify('An error occurred in attempted deletion')
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      console.log(error)
+    }
+  })
+
   const notify = (message) => {
     notificationDispatch({ type: 'NOTIFY', payload: message })
     setTimeout(() => {
@@ -82,8 +105,7 @@ const App = () => {
   }
 
   const handleLike = async (blog) => {
-    const newBlog = await blogService.like(blog)
-    console.log(newBlog)
+    likeMutation.mutate(blog)
   }
 
   const handleDelete = async (blog) => {
@@ -91,18 +113,8 @@ const App = () => {
       `Are you sure you want to delete ${blog.title}?`,
     )
     if (deleteOk) {
-      try {
-        const response = await blogService.deleteBlog(blog)
-        console.log('response is')
-
-        console.log(response)
-        notify(`${blog.title} was successfully deleted`)
-      } catch (error) {
-        console.log('error found', error)
-
-        const message = 'an error occurred'
-        notify(message)
-      }
+      deleteMutation.mutate(blog)
+      notify(`Deleted ${blog.title}`)
 
       //getAndSetBlogs()
     }
@@ -132,6 +144,7 @@ const App = () => {
               blog={blog}
               user={user}
               likeFunction={handleLike}
+              deleteFunction={handleDelete}
             />
           ))}
         </div>
