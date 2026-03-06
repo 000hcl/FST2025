@@ -1,13 +1,6 @@
-import userService from '../services/users'
-import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 
-const UserView = () => {
-  const result = useQuery({
-    queryKey: ['users'],
-    queryFn: userService.getAll,
-    retry: 1,
-    refetchOnWindowFocus: false,
-  })
+const UserView = ({ result }) => {
   const users = result.data
   if (result.isLoading) {
     return <div>users loading...</div>
@@ -27,7 +20,7 @@ const UserView = () => {
           </tr>
           {users.map((u) => (
             <tr key={u.id}>
-              <td>{u.name}</td>
+              <td><Link to={`/users/${u.id}`}>{u.name}</Link></td>
               <td>{u.blogs.length}</td>
             </tr>
           ))}

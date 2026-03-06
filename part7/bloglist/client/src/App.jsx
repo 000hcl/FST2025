@@ -8,6 +8,8 @@ import CreateForm from './components/CreateForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import UserView from './components/UserView'
+import User from './components/User'
+import userService from './services/users'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -166,6 +168,15 @@ const App = () => {
     }
   }
 
+
+  const userResult = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  })
+
+
   const BlogView = () => {
     return (
       <div>
@@ -195,10 +206,10 @@ const App = () => {
         />
       )}
       <Routes>
-        <Route path='/' element={<BlogView/>}/>
-        <Route path='/users' element={<UserView/>}/>
+        <Route path="/" element={<BlogView />} />
+        <Route path="/users" element={<UserView result={userResult}/>} />
+        <Route path='users/:id' element={<User result={userResult}/>} />
       </Routes>
-
     </Router>
   )
 }
