@@ -1,18 +1,19 @@
-import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
-  const [expanded, setExpanded] = useState(false)
+const Blog = ({ result, handleLike, user, handleDelete }) => {
+  const id = useParams().id
 
-  const toggleExpanded = () => {
-    setExpanded(!expanded)
+  if (result.isLoading) {
+    return <div>loading...</div>
+  }
+  if (result.isError) {
+    return <div>error</div>
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  const blog = result.data.find((b) => b.id === id)
+
+  if (!blog) {
+    return null
   }
 
   const isUser = () => {
@@ -26,24 +27,14 @@ const Blog = ({ blog, likeFunction, deleteFunction, user }) => {
   }
 
   return (
-    <div style={blogStyle} data-testid="blog">
-      <div>
-        {blog.title} {blog.author}{' '}
-        <button onClick={toggleExpanded}>{expanded ? 'hide' : 'view'}</button>
-      </div>
-      {expanded && (
-        <div id="expanded">
-          {blog.url}
-          <br />
-          {blog.likes} likes{' '}
-          <button onClick={() => likeFunction(blog)}>like</button>
-          <br />
-          {blog.user.name}
-          {isUser() && (
-            <div>
-              <button onClick={() => deleteFunction(blog)}>delete</button>
-            </div>
-          )}
+    <div>
+      <h2>{blog.title}</h2>
+      {blog.likes} likes <button onClick={() => handleLike(blog)}>like</button>
+      <br />
+      added by {blog.user.name}
+      {isUser() && (
+        <div>
+          <button onClick={() => handleDelete(blog)}>delete</button>
         </div>
       )}
     </div>

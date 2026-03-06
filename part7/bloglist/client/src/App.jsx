@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import NotificationContext from './NotificationContext'
 import UserContext from './UserContext'
-import Blog from './components/Blog'
+import BlogListing from './components/BlogListing'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import CreateForm from './components/CreateForm'
@@ -10,6 +10,7 @@ import loginService from './services/login'
 import UserView from './components/UserView'
 import User from './components/User'
 import userService from './services/users'
+import Blog from './components/Blog'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -155,12 +156,9 @@ const App = () => {
       return (
         <div>
           {blogs.map((blog) => (
-            <Blog
+            <BlogListing
               key={blog.id}
               blog={blog}
-              user={user}
-              likeFunction={handleLike}
-              deleteFunction={handleDelete}
             />
           ))}
         </div>
@@ -209,6 +207,7 @@ const App = () => {
         <Route path="/" element={<BlogView />} />
         <Route path="/users" element={<UserView result={userResult}/>} />
         <Route path='users/:id' element={<User result={userResult}/>} />
+        <Route path='blogs/:id' element={<Blog result={result} handleLike={handleLike} user={user} handleDelete={handleDelete}/>} />
       </Routes>
     </Router>
   )
