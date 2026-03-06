@@ -29,6 +29,9 @@ const Blog = ({ result, handleLike, user, handleDelete }) => {
   return (
     <div>
       <h2>{blog.title}</h2>
+      <div>
+        <a href={blog.url}>{blog.url}</a>
+      </div>
       {blog.likes} likes <button onClick={() => handleLike(blog)}>like</button>
       <br />
       added by {blog.user.name}
