@@ -11,6 +11,7 @@ import UserView from './components/UserView'
 import User from './components/User'
 import userService from './services/users'
 import Blog from './components/Blog'
+import Navigation from './components/Navigation'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -188,12 +189,7 @@ const App = () => {
     <Router>
       <Notification />
       <h2>blogs</h2>
-      {user && (
-        <div>
-          Logged in as {user.name}{' '}
-          <button onClick={handleLogout}>log out</button>
-        </div>
-      )}
+      <Navigation user={user} handleLogout={handleLogout}/>
       {!user && (
         <LoginForm
           username={username}
