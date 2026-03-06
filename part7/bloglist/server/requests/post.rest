@@ -49,3 +49,16 @@ Authorization: Bearer hgfdhdfginvalid
     "likes": 500
 }
 ###
+POST http://localhost:3003/api/blogs/6990342e37d63d672cf2bef2/comments HTTP/1.1
+content-type: application/json
+
+{
+    "comment": "Great blog!!"
+}
+###
+POST http://localhost:3003/api/blogs/6990342e37d63d672cf2bef2/comments HTTP/1.1
+content-type: application/json
+
+{
+    "comment": "Amazing insights"
+}

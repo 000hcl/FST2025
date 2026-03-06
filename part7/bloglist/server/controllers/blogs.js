@@ -74,4 +74,18 @@ blogsRouter.put("/:id", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  const { comment } = request.body
+
+  if (!blog) {
+    return response.status(404).end();
+  }
+
+  blog.comments = blog.comments.concat(comment)
+  const savedBlog = await blog.save();
+  response.status(201).json(savedBlog)
+
+})
+
 module.exports = blogsRouter;
