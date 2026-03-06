@@ -1,6 +1,26 @@
 import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 
-const Blog = ({ result, handleLike, user, handleDelete }) => {
+const CommentForm = ({ handleComment, blog }) => {
+  const [comment, setComment] = useState('')
+  const commentFunction = async (event) => {
+    event.preventDefault()
+    await handleComment(comment, blog)
+    setComment('')
+  }
+  return (
+    <form onSubmit={commentFunction}>
+      <input
+        type="text"
+        value={comment}
+        onChange={({ target }) => setComment(target.value)}
+      />
+      <button type="submit">comment</button>
+    </form>
+  )
+}
+
+const Blog = ({ result, handleLike, user, handleDelete, handleComment }) => {
   const id = useParams().id
 
   if (result.isLoading) {
@@ -41,6 +61,7 @@ const Blog = ({ result, handleLike, user, handleDelete }) => {
         </div>
       )}
       <div>
+        <CommentForm blog={blog} handleComment={handleComment}/>
         <h3>comments</h3>
         <ul>
           {blog.comments.map((c) => (

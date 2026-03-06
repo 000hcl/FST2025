@@ -14,14 +14,7 @@ import Blog from './components/Blog'
 import Navigation from './components/Navigation'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useParams,
-  useNavigate,
-} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 const App = () => {
   const queryClient = useQueryClient()
@@ -54,6 +47,16 @@ const App = () => {
       return false
     }
   }
+
+  const commentMutation = useMutation({
+    mutationFn: blogService.comment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (error) => {
+      console.log(error)
+    },
+  })
 
   const createMutation = useMutation({
     mutationFn: blogService.create,
@@ -126,6 +129,10 @@ const App = () => {
     likeMutation.mutate(blog)
   }
 
+  const handleComment = async (comment, blog) => {
+    commentMutation.mutate({ comment, blog })
+  }
+
   const handleDelete = async (blog) => {
     const deleteOk = window.confirm(
       `Are you sure you want to delete ${blog.title}?`,
@@ -157,16 +164,12 @@ const App = () => {
       return (
         <div>
           {blogs.map((blog) => (
-            <BlogListing
-              key={blog.id}
-              blog={blog}
-            />
+            <BlogListing key={blog.id} blog={blog} />
           ))}
         </div>
       )
     }
   }
-
 
   const userResult = useQuery({
     queryKey: ['users'],
@@ -174,7 +177,6 @@ const App = () => {
     retry: 1,
     refetchOnWindowFocus: false,
   })
-
 
   const BlogView = () => {
     return (
@@ -189,7 +191,7 @@ const App = () => {
     <Router>
       <Notification />
       <h2>blogs</h2>
-      <Navigation user={user} handleLogout={handleLogout}/>
+      <Navigation user={user} handleLogout={handleLogout} />
       {!user && (
         <LoginForm
           username={username}
@@ -201,9 +203,20 @@ const App = () => {
       )}
       <Routes>
         <Route path="/" element={<BlogView />} />
-        <Route path="/users" element={<UserView result={userResult}/>} />
-        <Route path='users/:id' element={<User result={userResult}/>} />
-        <Route path='blogs/:id' element={<Blog result={result} handleLike={handleLike} user={user} handleDelete={handleDelete}/>} />
+        <Route path="/users" element={<UserView result={userResult} />} />
+        <Route path="users/:id" element={<User result={userResult} />} />
+        <Route
+          path="blogs/:id"
+          element={
+            <Blog
+              result={result}
+              handleLike={handleLike}
+              user={user}
+              handleDelete={handleDelete}
+              handleComment={handleComment}
+            />
+          }
+        />
       </Routes>
     </Router>
   )
