@@ -1,5 +1,6 @@
 //import userService from '../services/users'
 import { useParams } from 'react-router-dom'
+import { FormStyle, Title } from './StyledComponents'
 
 const User = ({ result }) => {
   const id = useParams().id
@@ -21,15 +22,15 @@ const User = ({ result }) => {
   }
 
   return (
-    <div>
-      <h2>{user.name}</h2>
+    <FormStyle>
+      <Title>{user.name}</Title>
       <h3>added blogs</h3>
       <ul>
         {user.blogs.map((b) => (
           <li key={b.id}>{b.title}</li>
         ))}
       </ul>
-    </div>
+    </FormStyle>
   )
 }
 

@@ -1,3 +1,5 @@
+import { Title, Input, FormStyle, Button } from './StyledComponents'
+
 const LoginForm = ({
   handleLogin,
   username,
@@ -6,24 +8,24 @@ const LoginForm = ({
   passwordChange,
 }) => {
   return (
-    <>
-      <h2>Log in to bloglist</h2>
+    <FormStyle>
+      <Title>Log in to bloglist</Title>
       <form onSubmit={handleLogin}>
         <div>
           <label>
             username
-            <input type="text" value={username} onChange={usernameChange} />
+            <Input type="text" value={username} onChange={usernameChange} />
           </label>
         </div>
         <div>
           <label>
             password
-            <input type="password" value={password} onChange={passwordChange} />
+            <Input type="password" value={password} onChange={passwordChange} />
           </label>
         </div>
-        <button type="submit">login</button>
+        <Button type="submit">login</Button>
       </form>
-    </>
+    </FormStyle>
   )
 }
 

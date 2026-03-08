@@ -1,26 +1,22 @@
+import { NavButton, Button, LoggedIn, NavBar } from './StyledComponents'
+
 const Navigation = ({ user, handleLogout }) => {
-  const padding = {
-    paddingRight: 5,
-  }
-  const barColor = {
-    backgroundColor: 'MediumSeaGreen',
-    padding: 10
-  }
+
   return (
-    <div style={barColor}>
-      <a href="/" style={padding}>
+    <NavBar>
+      <NavButton href="/">
         blogs
-      </a>
-      <a href="/users" style={padding}>
+      </NavButton>
+      <NavButton href="/users">
         users
-      </a>
+      </NavButton>
       {user && (
-        <>
+        <LoggedIn>
           Logged in as {user.name}{' '}
-          <button onClick={handleLogout}>log out</button>
-        </>
+          <Button onClick={handleLogout}>log out</Button>
+        </LoggedIn>
       )}
-    </div>
+    </NavBar>
   )
 }
 

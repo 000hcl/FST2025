@@ -12,6 +12,7 @@ import User from './components/User'
 import userService from './services/users'
 import Blog from './components/Blog'
 import Navigation from './components/Navigation'
+import { Page, Title } from './components/StyledComponents'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
@@ -181,44 +182,48 @@ const App = () => {
   const BlogView = () => {
     return (
       <div>
-        <CreateForm createBlog={handleCreate} />
+        { user &&
+          <CreateForm createBlog={handleCreate} />
+        }
         {renderBlogs()}
       </div>
     )
   }
 
   return (
-    <Router>
-      <Notification />
-      <h2>blogs</h2>
-      <Navigation user={user} handleLogout={handleLogout} />
-      {!user && (
-        <LoginForm
-          username={username}
-          handleLogin={handleLogin}
-          password={password}
-          usernameChange={({ target }) => setUsername(target.value)}
-          passwordChange={({ target }) => setPassword(target.value)}
-        />
-      )}
-      <Routes>
-        <Route path="/" element={<BlogView />} />
-        <Route path="/users" element={<UserView result={userResult} />} />
-        <Route path="users/:id" element={<User result={userResult} />} />
-        <Route
-          path="blogs/:id"
-          element={
-            <Blog
-              result={result}
-              handleLike={handleLike}
-              user={user}
-              handleDelete={handleDelete}
-              handleComment={handleComment}
-            />
-          }
-        />
-      </Routes>
-    </Router>
+    <Page>
+      <Router>
+        <Notification />
+        <Title>blogs</Title>
+        <Navigation user={user} handleLogout={handleLogout} />
+        {!user && (
+          <LoginForm
+            username={username}
+            handleLogin={handleLogin}
+            password={password}
+            usernameChange={({ target }) => setUsername(target.value)}
+            passwordChange={({ target }) => setPassword(target.value)}
+          />
+        )}
+        <Routes>
+          <Route path="/" element={<BlogView />} />
+          <Route path="/users" element={<UserView result={userResult} />} />
+          <Route path="users/:id" element={<User result={userResult} />} />
+          <Route
+            path="blogs/:id"
+            element={
+              <Blog
+                result={result}
+                handleLike={handleLike}
+                user={user}
+                handleDelete={handleDelete}
+                handleComment={handleComment}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    </Page>
   )
 }
 

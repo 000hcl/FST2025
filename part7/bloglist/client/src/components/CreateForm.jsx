@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FormStyle, Button, Title, Input } from './StyledComponents'
 
 const CreateForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
@@ -27,18 +28,18 @@ const CreateForm = ({ createBlog }) => {
   }
 
   return (
-    <div>
+    <FormStyle>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{'create new blog'}</button>
+        <Button onClick={toggleVisibility}>{'create new blog'}</Button>
       </div>
       <div style={showWhenVisible}>
         <div>
-          <h2>Create new</h2>
+          <Title>Create new</Title>
           <form onSubmit={addBlog}>
             <div>
               <label>
                 title
-                <input
+                <Input
                   type="text"
                   value={title}
                   onChange={({ target }) => setTitle(target.value)}
@@ -48,7 +49,7 @@ const CreateForm = ({ createBlog }) => {
             <div>
               <label>
                 author
-                <input
+                <Input
                   type="text"
                   value={author}
                   onChange={({ target }) => setAuthor(target.value)}
@@ -58,19 +59,19 @@ const CreateForm = ({ createBlog }) => {
             <div>
               <label>
                 url
-                <input
+                <Input
                   type="text"
                   value={url}
                   onChange={({ target }) => setUrl(target.value)}
                 />
               </label>
             </div>
-            <button type="submit">create</button>
+            <Button type="submit">create</Button>
           </form>
         </div>
-        <button onClick={toggleVisibility}>cancel</button>
+        <Button onClick={toggleVisibility}>cancel</Button>
       </div>
-    </div>
+    </FormStyle>
   )
 }
 

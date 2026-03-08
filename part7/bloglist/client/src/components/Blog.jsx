@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useState } from 'react'
+import { Title, Button, FormStyle, Input } from './StyledComponents'
 
 const CommentForm = ({ handleComment, blog }) => {
   const [comment, setComment] = useState('')
@@ -10,12 +11,12 @@ const CommentForm = ({ handleComment, blog }) => {
   }
   return (
     <form onSubmit={commentFunction}>
-      <input
+      <Input
         type="text"
         value={comment}
         onChange={({ target }) => setComment(target.value)}
       />
-      <button type="submit">comment</button>
+      <Button type="submit">comment</Button>
     </form>
   )
 }
@@ -47,17 +48,17 @@ const Blog = ({ result, handleLike, user, handleDelete, handleComment }) => {
   }
 
   return (
-    <div>
-      <h2>{blog.title}</h2>
+    <FormStyle>
+      <Title>{blog.title}</Title>
       <div>
         <a href={blog.url}>{blog.url}</a>
       </div>
-      {blog.likes} likes <button onClick={() => handleLike(blog)}>like</button>
+      {blog.likes} likes <Button onClick={() => handleLike(blog)}>like</Button>
       <br />
       added by {blog.user.name}
       {isUser() && (
         <div>
-          <button onClick={() => handleDelete(blog)}>delete</button>
+          <Button onClick={() => handleDelete(blog)}>delete</Button>
         </div>
       )}
       <div>
@@ -69,7 +70,7 @@ const Blog = ({ result, handleLike, user, handleDelete, handleComment }) => {
           ))}
         </ul>
       </div>
-    </div>
+    </FormStyle>
   )
 }
 

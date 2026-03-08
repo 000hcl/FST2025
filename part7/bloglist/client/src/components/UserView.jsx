@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Title, FormStyle } from './StyledComponents'
 
 const UserView = ({ result }) => {
   const users = result.data
@@ -10,8 +11,8 @@ const UserView = ({ result }) => {
   }
 
   return (
-    <div>
-      <h2>Users</h2>
+    <FormStyle>
+      <Title>Users</Title>
       <table>
         <tbody>
           <tr>
@@ -26,7 +27,7 @@ const UserView = ({ result }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </FormStyle>
   )
 }
 
