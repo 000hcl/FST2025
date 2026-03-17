@@ -26,7 +26,7 @@ const EDIT_AUTHOR = gql`
     }
   }
 `
-const AuthorEdit = () => {
+const AuthorEdit = ({ authors }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
@@ -47,10 +47,18 @@ const AuthorEdit = () => {
       <form onSubmit={submit}>
         <div>
           name:
-          <input
+          {/* <input
             value={name}
             onChange={({ target }) => setName(target.value)}
-          />
+          /> */}
+          <select
+            value={name}
+            onChange={e => setName(e.target.value)}
+          >
+            {authors.map(a => (
+              <option value={a.name} key={a.id}>{a.name}</option>
+            ))}
+          </select>
         </div>
         <div>
           born:
@@ -98,7 +106,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <AuthorEdit />
+      <AuthorEdit authors={authors}/>
     </div>
   )
 }
