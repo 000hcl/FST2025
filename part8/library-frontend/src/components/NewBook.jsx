@@ -13,7 +13,9 @@ const ADD_BOOK = gql`
       id
       title
       published
-      author
+      author {
+        name
+      }
       genres
     }
   }
@@ -34,7 +36,9 @@ const ALL_BOOKS = gql`
   query {
     allBooks {
       id
-      author
+      author {
+        name
+      }
       title
       published
     }
@@ -59,7 +63,7 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    addBook({ variables: { title, published: Number(published), author, genres } })
+    await addBook({ variables: { title, published: Number(published), author, genres } })
 
     setTitle('')
     setPublished('')
