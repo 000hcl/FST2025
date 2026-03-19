@@ -5,6 +5,7 @@ const typeDefs = `
     allBooks(author: String, genre: String): [Book!]!
     authorCount: Int!
     allAuthors: [Author!]!
+    me: User
   }
 
   type Mutation {
@@ -18,7 +19,25 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ) : Author
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
 
+  }
+
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  }
+  
+  type Token {
+    value: String!
   }
 
   type Book {
