@@ -114,7 +114,15 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const currentUser = context.currentUser
+      if (!currentUser) {
+        throw new GraphQLError('Log in required', {
+          extensions: {
+            code: 'UNAUTHENTICATED'
+          }
+        })
+      }
       const titleExists = await Book.exists({ title: args.title })
       if (titleExists) {
         throw new GraphQLError(`Title must be unique: ${args.title}`, {
@@ -149,26 +157,34 @@ const resolvers = {
 
         return book.populate('author')
     },
-    editAuthor: async (root, args) => {
-        const author = await Author.findOne({ name: args.name })
-        
-        if (!author) {
-            return null
-        }
-        author.born = args.setBornTo
-        console.log(author);
-        
-        try {
-          await author.save()
-        } catch (error) {
-          throw new GraphQLError(`Failed to save author changes for ${args.name}`, {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-              invalidArgs: args.name,
-              error
-            }
-          })
-        }
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser
+      if (!currentUser) {
+        throw new GraphQLError('Log in required', {
+          extensions: {
+            code: 'UNAUTHENTICATED'
+          }
+        })
+      }
+      const author = await Author.findOne({ name: args.name })
+      
+      if (!author) {
+          return null
+      }
+      author.born = args.setBornTo
+      console.log(author);
+      
+      try {
+        await author.save()
+      } catch (error) {
+        throw new GraphQLError(`Failed to save author changes for ${args.name}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+            error
+          }
+        })
+      }
     },
     createUser: async (root, args) => {
       const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
