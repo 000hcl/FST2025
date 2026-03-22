@@ -4,13 +4,22 @@ import App from './App.jsx'
 
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { ApolloProvider } from '@apollo/client/react'
+import { SetContextLink } from '@apollo/client/link/context'
 
-const client = new ApolloClient({
-  link: new HttpLink({
-    uri: 'http://localhost:4000',
-  }),
-  cache: new InMemoryCache(),
+const authLink  = new SetContextLink(({ headers }) => {
+  const token = localStorage.getItem('library-user')
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : null,
+    }
+  }
 })
+
+const httpLink = new HttpLink({ uri: 'http://localhost:4000' })
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink)})
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

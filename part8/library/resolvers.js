@@ -132,7 +132,7 @@ const resolvers = {
           }
         })
       }
-      const bookAuthor = await Author.findOne({ name: args.author })
+      let bookAuthor = await Author.findOne({ name: args.author })
 
         if (!bookAuthor) {
 
