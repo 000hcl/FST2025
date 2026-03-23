@@ -2,27 +2,6 @@ import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
 import { ALL_BOOKS, BOOKS_BY_GENRE } from '../queries'
 
-const GenreBooks = (props) => {
-  const result = props.result
-  if (result.loading) {
-    return <div>loading...</div>
-  }
-  return (
-    <>
-
-        {result.data.allBooks.map((a) => (
-          <tr key={a.id}>
-            <td>{a.title}</td>
-            <td>{a.author.name}</td>
-            <td>{a.published}</td>
-          </tr>
-        ))}
-
-
-    </>
-  )
-}
-
 
 const Books = (props) => {
   const [genreSearch, setGenreSearch] = useState(null)
@@ -38,9 +17,13 @@ const Books = (props) => {
 
 
   const books = result.data? result.data.allBooks : []
+  const genreBooks = genreBooksResult.data? genreBooksResult.data.allBooks : []
   const genres = [
     ...new Set(books.flatMap(b => b.genres))
   ]
+  if (!props.show) {
+    return null
+  }
 
 
   if (result.loading) {
@@ -59,9 +42,14 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {genreSearch && (
-            <GenreBooks result={genreBooksResult} genre={genreSearch}/>
-          )}
+          {genreSearch && 
+            genreBooks.map((a) => (
+              <tr key={a.id}>
+                <td>{a.title}</td>
+                <td>{a.author.name}</td>
+                <td>{a.published}</td>
+              </tr>
+          ))}
           {!genreSearch && books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
