@@ -54,5 +54,9 @@ const typeDefs = `
     born: Int
     bookCount: Int!
   }
+  
+  type Subscription {
+    bookAdded: Book!
+  }
 `
 module.exports = typeDefs
