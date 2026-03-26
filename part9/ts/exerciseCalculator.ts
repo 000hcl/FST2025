@@ -1,3 +1,5 @@
+import { isAllNumbers, isNotNumber, correctArgAmount } from "./utils";
+
 interface Result {
     periodLength: number;
     trainingDays: number;
@@ -48,4 +50,29 @@ const exerciseCalculator = (week: number[], target: number): Result => {
     }
 }
 
-console.log(exerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2))
+const parseInputs = (args: string[]) => {
+    if (!correctArgAmount(args, 2, Infinity)) {
+        throw new Error(`Got ${args.length-2} arguments, expected at least 2`)
+    }
+    const target: number = Number(process.argv[2])
+    const week: number[] = process.argv.slice(3).map(d => Number(d))
+
+    if (isNotNumber(target)) {
+        throw new Error(`${target} is not a number`)
+    }
+    if (!isAllNumbers(week)) {
+        throw new Error(`Expected all numbers`)
+    }
+    return { target, week }
+}
+
+try {
+    const { target, week } = parseInputs(process.argv)
+    console.log(exerciseCalculator(week, target));
+    
+} catch (error: unknown) {
+    if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+        
+    }
+}
