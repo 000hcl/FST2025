@@ -1,6 +1,6 @@
 import { correctArgAmount, isNotNumber } from "./utils"
 
-const calculateBmi = (height: number, mass: number): string => {
+export const calculateBmi = (height: number, mass: number): string => {
     const mHeight = height/100
     const heightSquared = (mHeight*mHeight)
     const bmi = mass / heightSquared
@@ -24,20 +24,20 @@ const calculateBmi = (height: number, mass: number): string => {
     }
 }
 
-const checkInputs = (args: string[]) => {
+export const checkInputs = (args: string[]) => {
     if (!correctArgAmount(args, 2, 2)) {
-        throw new Error(`Expected 2 arguments, got ${args.length-2}`)
+        throw new Error(`Expected 2 arguments, got ${args.length}`)
     }
-    if (isNotNumber(Number(args[2]))) {
-        throw new Error(`${args[2]} is not a number`)
+    if (isNotNumber(Number(args[0]))) {
+        throw new Error(`${args[0]} is not a number`)
     }
-    if (isNotNumber(Number(args[3]))) {
-        throw new Error(`${args[3]} is not a number`)
+    if (isNotNumber(Number(args[1]))) {
+        throw new Error(`${args[1]} is not a number`)
     }
 
 }
 try {
-    checkInputs(process.argv)
+    checkInputs(process.argv.slice(2))
 
     const height: number = Number(process.argv[2])
     const mass: number = Number(process.argv[3])

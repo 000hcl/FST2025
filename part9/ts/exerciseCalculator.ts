@@ -10,7 +10,7 @@ interface Result {
     average: number;
 }
 
-const exerciseCalculator = (week: number[], target: number): Result => {
+export const exerciseCalculator = (week: number[], target: number): Result => {
     const periodLength = week.length
     const trainingDays = week.filter((day) => day>0).length
     const average = week.reduce((acc, num) => acc+num, 0)/periodLength
@@ -50,12 +50,12 @@ const exerciseCalculator = (week: number[], target: number): Result => {
     }
 }
 
-const parseInputs = (args: string[]) => {
+export const parseInputs = (args: string[]) => {
     if (!correctArgAmount(args, 2, Infinity)) {
-        throw new Error(`Got ${args.length-2} arguments, expected at least 2`)
+        throw new Error(`Got ${args.length} arguments, expected at least 2`)
     }
-    const target: number = Number(process.argv[2])
-    const week: number[] = process.argv.slice(3).map(d => Number(d))
+    const target: number = Number(args[0])
+    const week: number[] = args.slice(1).map(d => Number(d))
 
     if (isNotNumber(target)) {
         throw new Error(`${target} is not a number`)
@@ -67,7 +67,7 @@ const parseInputs = (args: string[]) => {
 }
 
 try {
-    const { target, week } = parseInputs(process.argv)
+    const { target, week } = parseInputs(process.argv.slice(2))
     console.log(exerciseCalculator(week, target));
     
 } catch (error: unknown) {
