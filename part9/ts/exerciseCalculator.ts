@@ -50,24 +50,24 @@ export const exerciseCalculator = (week: number[], target: number): Result => {
     };
 };
 
-export const parseInputs = (args: string[]) => {
-    if (!correctArgAmount(args, 2, Infinity)) {
-        throw new Error(`Got ${args.length} arguments, expected at least 2`);
+export const parseInputs = (target:number, week: unknown[]) => {
+    if (!correctArgAmount(week, 2, Infinity)) {
+        throw new Error(`Expected at least 2 arguments`);
     }
-    const target: number = Number(args[0]);
-    const week: number[] = args.slice(1).map(d => Number(d));
+
 
     if (isNotNumber(target)) {
         throw new Error(`${target} is not a number`);
     }
-    if (!isAllNumbers(week)) {
+    const numberWeek = week.map(d => Number(d));
+    if (!isAllNumbers(numberWeek)) {
         throw new Error(`Expected all numbers`);
     }
-    return { target, week };
+    return { target, week: numberWeek };
 };
 
 try {
-    const { target, week } = parseInputs(process.argv.slice(2));
+    const { target, week } = parseInputs(Number(process.argv[2]), process.argv.slice(3).map(d => Number(d)));
     console.log(exerciseCalculator(week, target));
     
 } catch (error: unknown) {
