@@ -8,9 +8,13 @@ router.get('/', (_req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const patient = req.body;
-    const added = patientService.addPatient(patient)
-    res.json(added)
-})
+    try {
+        const patient = patientService.toNewPatient(req.body);
+        const added = patientService.addPatient(patient);
+        res.json(added);
+    } catch {
+        res.status(400).send('Something went wrong');
+    }
+});
 
 export default router;
