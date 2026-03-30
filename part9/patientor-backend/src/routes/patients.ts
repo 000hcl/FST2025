@@ -1,5 +1,6 @@
 import express from 'express';
 import patientService from "../services/patientService";
+import { NewPatientSchema } from '../utils';
 
 const router = express.Router();
 
@@ -9,12 +10,13 @@ router.get('/', (_req, res) => {
 
 router.post('/', (req, res) => {
     try {
-        const patient = patientService.toNewPatient(req.body);
+        const patient = NewPatientSchema.parse(req.body);
         const added = patientService.addPatient(patient);
         res.json(added);
     } catch {
         res.status(400).send('Something went wrong');
     }
 });
+
 
 export default router;
