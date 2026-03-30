@@ -7,4 +7,10 @@ router.get('/', (_req, res) => {
     res.send(patientService.getPatients());
 });
 
+router.post('/', (req, res) => {
+    const patient = req.body;
+    const added = patientService.addPatient(patient)
+    res.json(added)
+})
+
 export default router;
