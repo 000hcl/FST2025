@@ -17,25 +17,41 @@ const App = () => {
   const [weather, setWeather] = useState<string>('')
   const [date, setDate] = useState<string>('')
   const [comment, setComment] = useState<string>('')
+  const [error, setError] = useState<string>('')
 
   useEffect(() => {
     axios.get<DiaryEntry[]>('http://localhost:3000/api/diaries').then(response => {
       setEntries(response.data)
     })
   })
+  const errorNotification = (message: string) => {
+    setError(message)
+    setTimeout(()=> setError(''), 5000)
+  }
   const createEntry = (event: React.SyntheticEvent) => {
     event.preventDefault()
-    const newEntry:NewDiaryEntry = {
-      visibility,
-      weather,
-      date,
-      comment
-    }
-    axios.post<DiaryEntry>('http://localhost:3000/api/diaries', newEntry).then(
-      response => {
-        setEntries(entries.concat(response.data))
+
+      const newEntry:NewDiaryEntry = {
+        visibility,
+        weather,
+        date,
+        comment
       }
-    )
+      axios.post<DiaryEntry>('http://localhost:3000/api/diaries', newEntry).then(
+        response => {
+          setEntries(entries.concat(response.data))
+        }
+      ).catch((error) => {
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data
+          console.log(errorMessage)
+          errorNotification(errorMessage)
+        } else {
+          console.error(error)
+        }
+      })
+
+
   }
   return (
     <div>
@@ -54,6 +70,7 @@ const App = () => {
         ))}
       </div>
       <h2>add new</h2>
+      <b>{error}</b>
         <form onSubmit={createEntry}>
           date :<input value={date} onChange={(event) => setDate(event.target.value)}/>
           <br/>
