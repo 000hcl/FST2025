@@ -22,7 +22,7 @@ const findById = (id: string): Patient | undefined => {
             dateOfBirth: patientInfo.dateOfBirth,
             gender: parseGender(patientInfo.gender),
             occupation: patientInfo.occupation,
-            entries: [],
+            entries: patientInfo.entries,
             ssn: patientInfo.ssn
         };
         return patient;
